@@ -1,5 +1,5 @@
 /****************************************************************************************
- * Copyright (c) 2007 David Faure <faure@kde.org>                                       *
+ * Copyright (c) 2014 Ralf Engels <ralf-engels@gmx.de>                                   *
  *                                                                                      *
  * This program is free software; you can redistribute it and/or modify it under        *
  * the terms of the GNU General Public License as published by the Free Software        *
@@ -14,45 +14,42 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.                           *
  ****************************************************************************************/
 
-#ifndef AMAROK_SQLSTORAGE_EXPORT_H
-#define AMAROK_SQLSTORAGE_EXPORT_H
+#include "SQLiteStorageFactory.h"
+#include "SQLiteStorage.h"
 
-/* needed for Q_DECL_EXPORT and Q_DECL_IMPORT macros */
-#include <QtGlobal>
-
-#ifndef AMAROK_SQLSTORAGE_EXPORT
-# if defined(MAKE_AMAROK_SQLSTORAGE_LIB)
-   /* We are building this library */
-#   define AMAROK_SQLSTORAGE_EXPORT Q_DECL_EXPORT
-# else
-   /* We are using this library */
-#   define AMAROK_SQLSTORAGE_EXPORT Q_DECL_IMPORT
-# endif
-#endif
-
-#ifndef AMAROK_SQLSTORAGE_MYSQLE_EXPORT
-# if defined(MAKE_AMAROK_STORAGE_MYSQLESTORAGE_LIB)
-   /* We are building this library */
-#   define AMAROK_SQLSTORAGE_MYSQLE_EXPORT Q_DECL_EXPORT
-# else
-   /* We are using this library */
-#   define AMAROK_SQLSTORAGE_MYSQLE_EXPORT Q_DECL_IMPORT
-# endif
-#endif
-
-#ifndef AMAROK_SQLSTORAGE_SQLITE_EXPORT
-# if defined(MAKE_AMAROK_STORAGE_SQLITESTORAGE_LIB)
-   /* We are building this library */
-#   define AMAROK_SQLSTORAGE_SQLITE_EXPORT Q_DECL_EXPORT
-# else
-   /* We are using this library */
-#   define AMAROK_SQLSTORAGE_SQLITE_EXPORT Q_DECL_IMPORT
-# endif
-#endif
+#include <core/support/Amarok.h>
 
 
-# ifndef AMAROK_SQLSTORAGE_EXPORT_DEPRECATED
-#  define AMAROK_SQLSTORAGE_EXPORT_DEPRECATED QT_DEPRECATED AMAROK_SQLSTORAGE_EXPORT
-# endif
+SQLiteStorageFactory::SQLiteStorageFactory()
+    : StorageFactory()
+{
+}
 
-#endif
+SQLiteStorageFactory::~SQLiteStorageFactory()
+{
+}
+
+void
+SQLiteStorageFactory::init()
+{
+    if( m_initialized )
+        return;
+
+    m_initialized = true;
+
+    if( ! Amarok::config( "MySQL" ).readEntry( "UseServer", false ) )
+    {
+        SQLiteStorage* storage = new SQLiteStorage();
+        bool initResult = storage->init();
+
+        // handle errors during creation
+        if( !storage->getLastErrors().isEmpty() )
+            Q_EMIT newError( storage->getLastErrors() );
+        storage->clearLastErrors();
+
+        if( initResult )
+            Q_EMIT newStorage( QSharedPointer<SqlStorage>( storage ) );
+        else
+            delete storage;
+    }
+}

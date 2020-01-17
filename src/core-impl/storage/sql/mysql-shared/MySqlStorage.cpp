@@ -102,7 +102,7 @@ MySqlStorage::~MySqlStorage()
 QStringList MySqlStorage::query( const QString& statement )
 {
     //DEBUG_BLOCK
-    //debug() << "[ATTN!] MySql::query( " << statement << " )";
+    debug() << "[ATTN!] MySql::query( " << statement << " )";
 
     initThreadInitializer();
     QMutexLocker locker( &m_mutex );
@@ -156,7 +156,7 @@ QStringList MySqlStorage::query( const QString& statement )
 int MySqlStorage::insert( const QString& statement, const QString& /* table */ )
 {
     //DEBUG_BLOCK
-    //debug() << "[ATTN!] MySql::insert( " << statement << " )";
+    debug() << "[ATTN!] MySql::insert( " << statement << " )";
 
     initThreadInitializer();
     QMutexLocker locker( &m_mutex );

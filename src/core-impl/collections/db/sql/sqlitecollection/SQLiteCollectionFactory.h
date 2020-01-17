@@ -1,5 +1,6 @@
 /****************************************************************************************
- * Copyright (c) 2007 David Faure <faure@kde.org>                                       *
+ * Copyright (c) 2008 Edward Toroshchin <edward.hades@gmail.com>                        *
+ * Copyright (c) 2009 Jeff Mitchell <mitchell@kde.org>                                  *
  *                                                                                      *
  * This program is free software; you can redistribute it and/or modify it under        *
  * the terms of the GNU General Public License as published by the Free Software        *
@@ -14,45 +15,28 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.                           *
  ****************************************************************************************/
 
-#ifndef AMAROK_SQLSTORAGE_EXPORT_H
-#define AMAROK_SQLSTORAGE_EXPORT_H
+#ifndef AMAROK_COLLECTION_SQLITECOLLECTION_FACTORY_H
+#define AMAROK_COLLECTION_SQLITECOLLECTION_FACTORY_H
 
-/* needed for Q_DECL_EXPORT and Q_DECL_IMPORT macros */
-#include <QtGlobal>
+#include "core/collections/Collection.h"
 
-#ifndef AMAROK_SQLSTORAGE_EXPORT
-# if defined(MAKE_AMAROK_SQLSTORAGE_LIB)
-   /* We are building this library */
-#   define AMAROK_SQLSTORAGE_EXPORT Q_DECL_EXPORT
-# else
-   /* We are using this library */
-#   define AMAROK_SQLSTORAGE_EXPORT Q_DECL_IMPORT
-# endif
-#endif
+namespace Collections {
 
-#ifndef AMAROK_SQLSTORAGE_MYSQLE_EXPORT
-# if defined(MAKE_AMAROK_STORAGE_MYSQLESTORAGE_LIB)
-   /* We are building this library */
-#   define AMAROK_SQLSTORAGE_MYSQLE_EXPORT Q_DECL_EXPORT
-# else
-   /* We are using this library */
-#   define AMAROK_SQLSTORAGE_MYSQLE_EXPORT Q_DECL_IMPORT
-# endif
-#endif
+class SQLiteCollectionFactory : public Collections::CollectionFactory
+{
+    Q_PLUGIN_METADATA(IID AmarokPluginFactory_iid FILE "amarok_collection-sqlitecollection.json")
+    Q_INTERFACES(Plugins::PluginFactory)
+    Q_OBJECT
 
-#ifndef AMAROK_SQLSTORAGE_SQLITE_EXPORT
-# if defined(MAKE_AMAROK_STORAGE_SQLITESTORAGE_LIB)
-   /* We are building this library */
-#   define AMAROK_SQLSTORAGE_SQLITE_EXPORT Q_DECL_EXPORT
-# else
-   /* We are using this library */
-#   define AMAROK_SQLSTORAGE_SQLITE_EXPORT Q_DECL_IMPORT
-# endif
-#endif
+    public:
+        SQLiteCollectionFactory()
+            : Collections::CollectionFactory() {}
 
+        ~SQLiteCollectionFactory() override {}
 
-# ifndef AMAROK_SQLSTORAGE_EXPORT_DEPRECATED
-#  define AMAROK_SQLSTORAGE_EXPORT_DEPRECATED QT_DEPRECATED AMAROK_SQLSTORAGE_EXPORT
-# endif
+        void init() override;
+};
+
+} //namespace Collections
 
 #endif
