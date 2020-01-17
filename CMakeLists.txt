@@ -74,6 +74,8 @@ option(WITH_MP3Tunes "Enable mp3tunes in the Amarok player, requires multiple ex
 option(WITH_IPOD "Enable iPod support in Amarok" ON)
 option(WITH_MYSQL_EMBEDDED "Build the embedded database library -- highly recommended" ON)
 option(WITH_PLAYGROUND "Enable building of playground scripts and applets (WARNING: some of them might have legal issues!)" OFF)
+option(WITH_SQLITE "Enable building of Amarok player with Sqlite DB" ON)
+
 
 ############### Taglib
 set(TAGLIB_MIN_VERSION "1.7")
@@ -204,6 +206,11 @@ if( WITH_PLAYER )
     endif()
     set_package_properties( MYSQL PROPERTIES DESCRIPTION "MySQL Server Libraries" URL "http://www.mysql.com" TYPE REQUIRED )
 
+    if( WITH_SQLITE )
+        set( BUILD_SQLITE_COLLECTION TRUE )
+        set_package_properties( SQLITE PROPERTIES DESCRIPTION "SQLite Libraries" URL "https://www.sqlite.org" TYPE REQUIRED )
+    endif()
+
     # zlib is required for mysql embedded
     find_package(ZLIB REQUIRED)
     set_package_properties( ZLIB PROPERTIES DESCRIPTION "zlib" TYPE REQUIRED )
@@ -318,5 +325,7 @@ if( WITH_PLAYGROUND )
     add_subdirectory( playground )
     message(STATUS "Included playground subdirectory in configuration")
 endif()
+
+
 
 include(CTest)
