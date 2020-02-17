@@ -31,6 +31,7 @@
 #include <KMessageBox>
 
 static const int DB_VERSION = 15;
+static const QString sqlite = "SQLite";
 
 int
 DatabaseUpdater::expectedDatabaseVersion()
@@ -70,11 +71,25 @@ DatabaseUpdater::update()
 
     debug() << "Database version: " << dbVersion;
 
+    QString query;
     if( dbVersion == 0 )
     {
-        createTables();
-        QString query = QString( "INSERT INTO admin(component, version) VALUES ('DB_VERSION', %1);" ).arg( DB_VERSION );
-        m_collection->sqlStorage()->query( query );
+        // TODO Need a better way of doing this
+        if( Amarok::config("SQLite").readEntry("Use SQLite", false))
+        {
+            createTables();
+            QString query = QString( "INSERT INTO admin(component, version) VALUES ('DB_VERSION', %1);" ).arg( DB_VERSION );
+            m_collection->sqlStorage()->query( query );
+        }
+        else
+        {
+            /*
+            this->createSQLiteTables();
+            QString query = QString( "INSERT INTO admin(component, version) VALUES ('DB_VERSION', 999);");
+            m_collection->sqlStorage()->query( query );
+            */
+        }
+
         return true;
     }
 
@@ -968,18 +983,24 @@ int
 DatabaseUpdater::adminValue( const QString &key ) const
 {
     auto storage = m_collection->sqlStorage();
+    QStringList values =*new QStringList ();
 
-    QStringList columns = storage->query(
-            QString( "SELECT column_name FROM INFORMATION_SCHEMA.columns "
-                     "WHERE table_name='admin'" ) );
-    if( columns.isEmpty() )
-        return 0; //no table with that name
+    // TODO Need a better way of doing this
+    if( Amarok::config("SQLite").readEntry("Use SQLite", false)){
+        QStringList columns = storage->query(
+                QString( "SELECT column_name FROM INFORMATION_SCHEMA.columns "
+                         "WHERE table_name='admin'" ) );
+        if( columns.isEmpty() )
+            return 0; //no table with that name
+    }
+    else {
 
-    QStringList values = storage->query(
-            QString( "SELECT version FROM admin WHERE component = '%1';")
-            .arg(storage->escape( key ) ) );
-    if( values.isEmpty() )
-        return 0;
+    }
+        values = storage->query(
+                QString( "SELECT version FROM admin WHERE component = '%1'")
+                .arg(storage->escape( key ) ) );
+        if( values.isEmpty() )
+            return 0;
 
     return values.first().toInt();
 }

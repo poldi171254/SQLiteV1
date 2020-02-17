@@ -248,7 +248,7 @@ template<class T> class AmarokSharedPointer;
 template<class T> QDebug &
 operator<<( QDebug dbg, const AmarokSharedPointer<T> &ptr )
 {
-    dbg.nospace() << "AmarokSharedPointer(" << *ptr.data() << ")";
+    //dbg.nospace() << "AmarokSharedPointer(" << *ptr.data() << ")";
     return dbg.space();
 }
 

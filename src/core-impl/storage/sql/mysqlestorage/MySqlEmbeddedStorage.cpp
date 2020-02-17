@@ -38,6 +38,7 @@ MySqlEmbeddedStorage::MySqlEmbeddedStorage()
     : MySqlStorage()
 {
     m_debugIdent = "MySQLe";
+    DatabaseType = "mySQLe";
 }
 
 bool

@@ -37,24 +37,40 @@ AbstractTrackTableCommitter::commit( const QList<Meta::SqlTrackPtr> &tracks )
 
     m_storage = tracks.first()->sqlCollection()->sqlStorage();
 
+    // TODO find a better way to handle MySql specific code
+    QString dbType = m_storage->DatabaseType;
+
     // -- get the maximum size for our commit
     static int maxSize = 0;
-    if( maxSize == 0 )
-    {
-        QStringList res = m_storage->query( "SHOW VARIABLES LIKE 'max_allowed_packet';" );
-        if( res.size() < 2 || res[1].toInt() == 0 )
+
+    if (dbType != "SQLite"){
+        if( maxSize == 0 )
         {
-            warning() << "Uh oh! For some reason MySQL thinks there isn't a max allowed size!";
-            return;
+            QStringList res = m_storage->query( "SHOW VARIABLES LIKE 'max_allowed_packet';" );
+            if( res.size() < 2 || res[1].toInt() == 0 )
+            {
+                warning() << "Uh oh! For some reason MySQL thinks there isn't a max allowed size!";
+                return;
+            }
+            debug() << "obtained max_allowed_packet is " << res[1];
+            maxSize = res[1].toInt() / 3; //for safety, due to multibyte encoding
         }
-        debug() << "obtained max_allowed_packet is " << res[1];
-        maxSize = res[1].toInt() / 3; //for safety, due to multibyte encoding
     }
+    else {
+        maxSize = 1073741824;
+    }
+
 
 
     QStringList fields = getFields();
 
-    const QString updateQueryStart = "UPDATE LOW_PRIORITY "+tableName()+" SET ";
+    QString updateQueryStart = "";
+    if (dbType != "SQLite") {
+        updateQueryStart = "UPDATE LOW_PRIORITY "+tableName()+" SET ";
+    }
+    else{
+        const QString updateQueryStart = "UPDATE "+tableName()+" SET ";
+    }
     const QString insertQueryStart = "INSERT INTO "+tableName()+
         " ("+fields.join(",")+") VALUES ";
 
@@ -92,7 +108,9 @@ AbstractTrackTableCommitter::commit( const QList<Meta::SqlTrackPtr> &tracks )
             QString newValues = '(' + values.join(",") + ')';
 
             // - if the insertQuery is long enough, commit it.
-            if( insertQueryStart.length() + insertQuery.length() + newValues.length() + 1 >= maxSize - 3 ) // ";"
+            // debug() << " StartL" << insertQueryStart.length() << " QueryL" << insertQuery.length() << " ValueL " << newValues.length() << "maxSize = " << maxSize - 3;
+
+            if( insertQueryStart.length() + insertQuery.length() + newValues.length() + 1 >= maxSize - 3 )
             {
                 // commit
                 insertQuery = insertQueryStart + insertQuery + ';';

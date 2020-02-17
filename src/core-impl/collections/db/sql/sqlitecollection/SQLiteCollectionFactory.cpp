@@ -20,6 +20,7 @@
 #include <core-impl/storage/StorageManager.h>
 #include <core-impl/collections/db/sql/SqlCollection.h>
 #include <core-impl/collections/db/sql/SqlCollectionFactory.h>
+#include <core/support/Debug.h>
 
 #include <KLocalizedString>
 
@@ -29,6 +30,7 @@ using namespace Collections;
 void
 SQLiteCollectionFactory::init()
 {
+    DEBUG_BLOCK
     if( m_initialized )
         return;
 
@@ -36,6 +38,7 @@ SQLiteCollectionFactory::init()
     auto storage = StorageManager::instance()->sqlStorage();
     SqlCollection *collection = fac.createSqlCollection( storage );
     m_initialized = true;
+
 
     Q_EMIT newCollection( collection );
 }

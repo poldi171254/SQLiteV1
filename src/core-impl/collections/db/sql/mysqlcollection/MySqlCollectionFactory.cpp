@@ -20,6 +20,7 @@
 #include <core-impl/storage/StorageManager.h>
 #include <core-impl/collections/db/sql/SqlCollection.h>
 #include <core-impl/collections/db/sql/SqlCollectionFactory.h>
+#include <core/support/Debug.h>
 
 #include <KLocalizedString>
 
@@ -29,6 +30,8 @@ using namespace Collections;
 void
 MySqlCollectionFactory::init()
 {
+    DEBUG_BLOCK
+
     if( m_initialized )
         return;
 

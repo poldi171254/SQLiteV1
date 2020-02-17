@@ -37,7 +37,7 @@ SQLiteStorageFactory::init()
 
     m_initialized = true;
 
-    if( ! Amarok::config( "MySQL" ).readEntry( "UseServer", false ) )
+    if( Amarok::config( "SQLite" ).readEntry( "Use SQLite", true ) )
     {
         SQLiteStorage* storage = new SQLiteStorage();
         bool initResult = storage->init();

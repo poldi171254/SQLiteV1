@@ -908,6 +908,7 @@ Playlist::PrettyItemDelegate::buildTrackArgsMap( const Meta::TrackPtr &track ) c
 
 
     args[QStringLiteral("title")] = track->name();
+    debug() << "++++++ PrettyItemDelegate track name " << track->name();
     args[QStringLiteral("composer")] = track->composer() ? track->composer()->name() : QString();
 
     // if year == 0 then we don't want include it
@@ -924,6 +925,7 @@ Playlist::PrettyItemDelegate::buildTrackArgsMap( const Meta::TrackPtr &track ) c
     args[QStringLiteral("albumartist")] = albumartist;
     args[QStringLiteral("initial")] = albumartist.mid( 0, 1 ).toUpper();    //artists starting with The are already handled above
     args[QStringLiteral("filetype")] = track->type();
+    debug() << "++++++ PrettyItemDelegate track type " << track->type();
 
     args[QStringLiteral("rating")] = track->statistics()->rating();
     args[QStringLiteral("filesize")] = track->filesize();

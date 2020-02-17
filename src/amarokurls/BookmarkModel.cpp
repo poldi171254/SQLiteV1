@@ -133,9 +133,9 @@ BookmarkModel::createIndex( int row, int column, const BookmarkViewItemPtr &item
 QModelIndex
 BookmarkModel::index( int row, int column, const QModelIndex & parent ) const
 {
-    //DEBUG_BLOCK
+    DEBUG_BLOCK
 
-    //debug() << "row: " << row << ", column: " <<column;
+    debug() << "row: " << row << ", column: " <<column;
     if (!hasIndex(row, column, parent))
         return QModelIndex();
 
@@ -172,7 +172,7 @@ BookmarkModel::index( int row, int column, const QModelIndex & parent ) const
 QModelIndex
 BookmarkModel::parent( const QModelIndex & index ) const
 {
-    //DEBUG_BLOCK
+    DEBUG_BLOCK
 
     if (!index.isValid())
         return QModelIndex();
@@ -180,7 +180,7 @@ BookmarkModel::parent( const QModelIndex & index ) const
     
     BookmarkGroupPtr parent = item->parent();
 
-    //debug() << "parent: " << parent;
+    debug() << "parent: " << parent;
 
     if ( parent &&  parent->parent() )
     {
@@ -195,24 +195,24 @@ BookmarkModel::parent( const QModelIndex & index ) const
 int
 BookmarkModel::rowCount( const QModelIndex & parent ) const
 {
-    //DEBUG_BLOCK
+    DEBUG_BLOCK
 
     if ( parent.column() > 0 ) {
-      //  debug() << "bad column";
+      debug() << "bad column";
         return 0;
     }
 
     if (!parent.isValid()) {
 
-        //debug() << "top level item has" << m_root->childCount();
+        debug() << "top level item has" << m_root->childCount();
 
         return m_root->childCount();
 
     }
     BookmarkViewItemPtr item = m_viewItems.value( parent.internalId() );
-    //debug() << "row: " << parent.row();
-    //debug() << "address: " << item;
-    //debug() << "count: " << item->childCount();
+    debug() << "row: " << parent.row();
+    debug() << "address: " << item;
+    debug() << "count: " << item->childCount();
 
     return item->childCount();
 }
@@ -419,21 +419,39 @@ void BookmarkModel::createTables()
     if( !sqlStorage )
         return;
 
-    sqlStorage->query( QString( "CREATE TABLE bookmark_groups ("
-            " id " + sqlStorage->idType() +
-            ", parent_id INTEGER"
-            ", name " + sqlStorage->textColumnType() +
-            ", description " + sqlStorage->textColumnType() +
-            ", custom " + sqlStorage->textColumnType() + " ) ENGINE = MyISAM;" ) );
+    if (sqlStorage->DatabaseType != "SQLite"){
+        sqlStorage->query( QString( "CREATE TABLE bookmark_groups ("
+                " id " + sqlStorage->idType() +
+                ", parent_id INTEGER"
+                ", name " + sqlStorage->textColumnType() +
+                ", description " + sqlStorage->textColumnType() +
+                ", custom " + sqlStorage->textColumnType() + " ) ENGINE = MyISAM;" ) );
 
-    sqlStorage->query( QString( "CREATE TABLE bookmarks ("
-            " id " + sqlStorage->idType() +
-            ", parent_id INTEGER"
-            ", name " + sqlStorage->textColumnType() +
-            ", url " + sqlStorage->exactTextColumnType() +
-            ", description " + sqlStorage->exactTextColumnType() +
-            ", custom " + sqlStorage->textColumnType() + " ) ENGINE = MyISAM;" ) );
+        sqlStorage->query( QString( "CREATE TABLE bookmarks ("
+                " id " + sqlStorage->idType() +
+                ", parent_id INTEGER"
+                ", name " + sqlStorage->textColumnType() +
+                ", url " + sqlStorage->exactTextColumnType() +
+                ", description " + sqlStorage->exactTextColumnType() +
+                ", custom " + sqlStorage->textColumnType() + " ) ENGINE = MyISAM;" ) );
+    }
+    else {
+        sqlStorage->query( QString( "CREATE TABLE bookmark_groups ("
+                " id " + sqlStorage->idType() +
+                ", parent_id INTEGER"
+                ", name " + sqlStorage->textColumnType() +
+                ", description " + sqlStorage->textColumnType() +
+                ", custom " + sqlStorage->textColumnType()) + " )" );
 
+
+        sqlStorage->query( QString( "CREATE TABLE bookmarks ("
+                " id " + sqlStorage->idType() +
+                ", parent_id INTEGER"
+                ", name " + sqlStorage->textColumnType() +
+                ", url " + sqlStorage->exactTextColumnType() +
+                ", description " + sqlStorage->exactTextColumnType() +
+                ", custom " + sqlStorage->textColumnType()) + " )" );
+    }
 }
 
 void BookmarkModel::deleteTables()
@@ -459,10 +477,20 @@ void BookmarkModel::checkTables()
     if( !sqlStorage )
         return;
 
+    QString dbType = sqlStorage->DatabaseType;
+    QStringList values2;
+
     QStringList values = sqlStorage->query( QStringLiteral("SELECT version FROM admin WHERE component = '%1';").arg(sqlStorage->escape( key ) ) );
 
     //also check if the db  version is correct but the table is simply missing... can happen due to a bug in 2.2.0 beta1 and beta2
-    QStringList values2 = sqlStorage->query( QStringLiteral("show tables like 'bookmarks';"));
+    //TODO Handle SQLite properly
+    if (dbType != "SQLite"){
+        values2 = sqlStorage->query( QStringLiteral("show tables like 'bookmarks';"));
+    }
+    else {
+        values2 = sqlStorage->query( QStringLiteral("SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%' and name LIKE 'bookmarks';"));
+    }
+
     
     if( values.isEmpty() || values2.isEmpty() )
     {

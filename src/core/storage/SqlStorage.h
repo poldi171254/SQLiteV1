@@ -29,6 +29,7 @@
 class SqlStorage
 {
 public:
+    QString DatabaseType;
     SqlStorage() {}
     virtual ~SqlStorage() {}
 

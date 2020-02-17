@@ -72,7 +72,7 @@ option(WITH_UTILITIES "Enable building of utilities" ON)
 option(WITH_PLAYER "Enable building of main Amarok player" ON)
 option(WITH_MP3Tunes "Enable mp3tunes in the Amarok player, requires multiple extra dependencies" ON)
 option(WITH_IPOD "Enable iPod support in Amarok" ON)
-option(WITH_MYSQL_EMBEDDED "Build the embedded database library -- highly recommended" ON)
+option(WITH_MYSQL_EMBEDDED "Build the embedded database library -- highly recommended" OFF)
 option(WITH_PLAYGROUND "Enable building of playground scripts and applets (WARNING: some of them might have legal issues!)" OFF)
 option(WITH_SQLITE "Enable building of Amarok player with Sqlite DB" ON)
 
@@ -151,7 +151,7 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/shared
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")  # Require C++11
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fexceptions")  # Require C++11
 
 # WORKAROUND for Clang bug: http://llvm.org/bugs/show_bug.cgi?id=15651
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND WIN32)
@@ -197,14 +197,14 @@ if( WITH_PLAYER )
     find_package(X11)
     find_package(Threads REQUIRED)
 
-    find_package(MySQL REQUIRED)
-    if( WITH_MYSQL_EMBEDDED )
-        set( BUILD_MYSQLE_COLLECTION TRUE )
-        set_package_properties( MYSQLD PROPERTIES DESCRIPTION "Embedded MySQL Libraries" URL "http://www.mysql.com" TYPE REQUIRED )
-    else()
-        add_definitions( "-DNO_MYSQL_EMBEDDED" )
-    endif()
-    set_package_properties( MYSQL PROPERTIES DESCRIPTION "MySQL Server Libraries" URL "http://www.mysql.com" TYPE REQUIRED )
+    # find_package(MySQL REQUIRED)
+    # if( WITH_MYSQL_EMBEDDED )
+    #    set( BUILD_MYSQLE_COLLECTION TRUE )
+    #    set_package_properties( MYSQLD PROPERTIES DESCRIPTION "Embedded MySQL Libraries" URL "http://www.mysql.com" TYPE REQUIRED )
+    #else()
+    #    add_definitions( "-DNO_MYSQL_EMBEDDED" )
+    #endif()
+    #set_package_properties( MYSQL PROPERTIES DESCRIPTION "MySQL Server Libraries" URL "http://www.mysql.com" TYPE REQUIRED )
 
     if( WITH_SQLITE )
         set( BUILD_SQLITE_COLLECTION TRUE )

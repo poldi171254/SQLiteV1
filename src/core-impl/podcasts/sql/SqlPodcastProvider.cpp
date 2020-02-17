@@ -1433,42 +1433,81 @@ SqlPodcastProvider::createTables() const
     if( !sqlStorage )
         return;
 
-    sqlStorage->query( QString( "CREATE TABLE podcastchannels ("
-                                "id " + sqlStorage->idType() +
-                                ",url " + sqlStorage->longTextColumnType() +
-                                ",title " + sqlStorage->longTextColumnType() +
-                                ",weblink " + sqlStorage->longTextColumnType() +
-                                ",image " + sqlStorage->longTextColumnType() +
-                                ",description " + sqlStorage->longTextColumnType() +
-                                ",copyright "  + sqlStorage->textColumnType() +
-                                ",directory "  + sqlStorage->textColumnType() +
-                                ",labels " + sqlStorage->textColumnType() +
-                                ",subscribedate " + sqlStorage->textColumnType() +
-                                ",autoscan BOOL, fetchtype INTEGER"
-                                ",haspurge BOOL, purgecount INTEGER"
-                                ",writetags BOOL, filenamelayout VARCHAR(1024) ) ENGINE = MyISAM;" ) );
+    if (sqlStorage->DatabaseType != "SQLite") {
+        sqlStorage->query( QString( "CREATE TABLE podcastchannels ("
+                                    "id " + sqlStorage->idType() +
+                                    ",url " + sqlStorage->longTextColumnType() +
+                                    ",title " + sqlStorage->longTextColumnType() +
+                                    ",weblink " + sqlStorage->longTextColumnType() +
+                                    ",image " + sqlStorage->longTextColumnType() +
+                                    ",description " + sqlStorage->longTextColumnType() +
+                                    ",copyright "  + sqlStorage->textColumnType() +
+                                    ",directory "  + sqlStorage->textColumnType() +
+                                    ",labels " + sqlStorage->textColumnType() +
+                                    ",subscribedate " + sqlStorage->textColumnType() +
+                                    ",autoscan BOOL, fetchtype INTEGER"
+                                    ",haspurge BOOL, purgecount INTEGER"
+                                    ",writetags BOOL, filenamelayout VARCHAR(1024) ) ENGINE = MyISAM;" ) );
 
-    sqlStorage->query( QString( "CREATE TABLE podcastepisodes ("
-                                "id " + sqlStorage->idType() +
-                                ",url " + sqlStorage->longTextColumnType() +
-                                ",channel INTEGER"
-                                ",localurl " + sqlStorage->longTextColumnType() +
-                                ",guid " + sqlStorage->exactTextColumnType() +
-                                ",title " + sqlStorage->longTextColumnType() +
-                                ",subtitle " + sqlStorage->longTextColumnType() +
-                                ",sequencenumber INTEGER" +
-                                ",description " + sqlStorage->longTextColumnType() +
-                                ",mimetype "  + sqlStorage->textColumnType() +
-                                ",pubdate "  + sqlStorage->textColumnType() +
-                                ",duration INTEGER"
-                                ",filesize INTEGER"
-                                ",isnew BOOL"
-                                ",iskeep BOOL) ENGINE = MyISAM;" ) );
+        sqlStorage->query( QString( "CREATE TABLE podcastepisodes ("
+                                    "id " + sqlStorage->idType() +
+                                    ",url " + sqlStorage->longTextColumnType() +
+                                    ",channel INTEGER"
+                                    ",localurl " + sqlStorage->longTextColumnType() +
+                                    ",guid " + sqlStorage->exactTextColumnType() +
+                                    ",title " + sqlStorage->longTextColumnType() +
+                                    ",subtitle " + sqlStorage->longTextColumnType() +
+                                    ",sequencenumber INTEGER" +
+                                    ",description " + sqlStorage->longTextColumnType() +
+                                    ",mimetype "  + sqlStorage->textColumnType() +
+                                    ",pubdate "  + sqlStorage->textColumnType() +
+                                    ",duration INTEGER"
+                                    ",filesize INTEGER"
+                                    ",isnew BOOL"
+                                    ",iskeep BOOL) ENGINE = MyISAM;" ) );
+        sqlStorage->query( QStringLiteral("CREATE FULLTEXT INDEX url_podchannel ON podcastchannels( url );") );
+        sqlStorage->query( QStringLiteral("CREATE FULLTEXT INDEX url_podepisode ON podcastepisodes( url );") );
+        sqlStorage->query(QStringLiteral("CREATE FULLTEXT INDEX localurl_podepisode ON podcastepisodes( localurl );") );
+    }
+    else {
+        // TODO
+        // SQLite uses vurtual tables for Full text searches. Need to test if this works as intended
+        // sqlStorage->query( QString( "CREATE VIRTUAL TABLE podcastchannels using FTS5("
+        sqlStorage->query( QString( "CREATE TABLE podcastchannels("
+                                    "id " + sqlStorage->idType() +
+                                    ",url " + sqlStorage->longTextColumnType() +
+                                    ",title " + sqlStorage->longTextColumnType() +
+                                    ",weblink " + sqlStorage->longTextColumnType() +
+                                    ",image " + sqlStorage->longTextColumnType() +
+                                    ",description " + sqlStorage->longTextColumnType() +
+                                    ",copyright "  + sqlStorage->textColumnType() +
+                                    ",directory "  + sqlStorage->textColumnType() +
+                                    ",labels " + sqlStorage->textColumnType() +
+                                    ",subscribedate " + sqlStorage->textColumnType() +
+                                    ",autoscan BOOL, fetchtype INTEGER"
+                                    ",haspurge BOOL, purgecount INTEGER"
+                                    ",writetags BOOL, filenamelayout VARCHAR(1024) );" ) );
 
-    sqlStorage->query( QStringLiteral("CREATE FULLTEXT INDEX url_podchannel ON podcastchannels( url );") );
-    sqlStorage->query( QStringLiteral("CREATE FULLTEXT INDEX url_podepisode ON podcastepisodes( url );") );
-    sqlStorage->query(
-            QStringLiteral("CREATE FULLTEXT INDEX localurl_podepisode ON podcastepisodes( localurl );") );
+        sqlStorage->query( QString( "CREATE TABLE podcastepisodes("
+                                    "id " + sqlStorage->idType() +
+                                    ",url " + sqlStorage->longTextColumnType() +
+                                    ",channel INTEGER"
+                                    ",localurl " + sqlStorage->longTextColumnType() +
+                                    ",guid " + sqlStorage->exactTextColumnType() +
+                                    ",title " + sqlStorage->longTextColumnType() +
+                                    ",subtitle " + sqlStorage->longTextColumnType() +
+                                    ",sequencenumber INTEGER" +
+                                    ",description " + sqlStorage->longTextColumnType() +
+                                    ",mimetype "  + sqlStorage->textColumnType() +
+                                    ",pubdate "  + sqlStorage->textColumnType() +
+                                    ",duration INTEGER"
+                                    ",filesize INTEGER"
+                                    ",isnew BOOL"
+                                    ",iskeep BOOL);" ) );
+        sqlStorage->query( QStringLiteral("CREATE  INDEX url_podchannel ON podcastchannels( url );") );
+        sqlStorage->query( QStringLiteral("CREATE INDEX url_podepisode ON podcastepisodes( url );") );
+        sqlStorage->query( QStringLiteral("CREATE INDEX localurl_podepisode ON podcastepisodes( localurl );") );
+    }
 }
 
 void

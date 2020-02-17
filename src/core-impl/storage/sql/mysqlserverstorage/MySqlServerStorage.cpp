@@ -35,6 +35,7 @@ MySqlServerStorage::MySqlServerStorage()
     : MySqlStorage()
 {
     m_debugIdent = "MySQL-server";
+    DatabaseType = "MySQL-server";
 }
 
 bool

@@ -788,7 +788,7 @@ SqlTrack::commitIfInNonBatchUpdate()
     if( m_batchUpdate > 0 || m_cache.isEmpty() )
         return; // nothing to do
 
-    // debug() << "SqlTrack::commitMetaDataChanges " << m_cache;
+    debug() << "SqlTrack::commitMetaDataChanges " << m_cache;
 
     QString oldUid = m_uid;
 
@@ -855,7 +855,7 @@ SqlTrack::commitIfInNonBatchUpdate()
         if( oldUrl != newUrl )
             m_collection->registry()->updateCachedUrl( oldUrl.path(), newUrl.path() );
         m_url = newUrl;
-        // debug() << "m_cache contains a new URL, setting m_url to " << m_url << " from " << oldUrl;
+        debug() << "m_cache contains a new URL, setting m_url to " << m_url << " from " << oldUrl;
     }
 
     if( m_cache.contains( Meta::valArtist ) )
@@ -1053,6 +1053,9 @@ SqlTrack::commitIfInNonBatchUpdate()
 void
 SqlTrack::updatePlaylistsToDb( const FieldHash &fields, const QString &oldUid )
 {
+
+    debug() << "SqlTrack::updatePlaylistsToDb " << fields;
+
     if( fields.isEmpty() )
         return; // nothing to do
 

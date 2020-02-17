@@ -202,7 +202,7 @@ BiasSolver::addTracks( SolverList *list )
     if( set.trackCount() == 0 )
         return; // no candidates
 
-    // debug() << "addTracks at"<<list->m_trackList.count()<<"candidates:"<<set.trackCount()<<"time"<< m_startTime.msecsTo( QDateTime::currentDateTime() );
+    debug() << "addTracks at"<<list->m_trackList.count()<<"candidates:"<<set.trackCount()<<"time"<< m_startTime.msecsTo( QDateTime::currentDateTime() );
 
     for( int tries = 0; tries < 5 || firstTrack ; tries++ )
     {
@@ -281,7 +281,7 @@ BiasSolver::matchingTracks( const Meta::TrackList& playlist ) const
     if( m_tracks.isOutstanding() )
         m_biasResultsReady.wait( &m_biasResultsMutex );
 
-    // debug() << "BiasSolver::matchingTracks returns"<<m_tracks.trackCount()<<"of"<<m_trackCollection->count()<<"tracks.";
+    debug() << "BiasSolver::matchingTracks returns"<<m_tracks.trackCount()<<"of"<<m_trackCollection->count()<<"tracks.";
 
     return m_tracks;
 }

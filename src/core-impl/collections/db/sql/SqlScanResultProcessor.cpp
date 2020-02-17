@@ -182,7 +182,7 @@ void
 SqlScanResultProcessor::commitTrack( CollectionScanner::Track *track,
                                      CollectionScanner::Album *srcAlbum )
 {
-    // debug() << "commitTrack on"<<track->title()<< "album"<<srcAlbum->name() << "dir:" << track->directory()->path()<<track->directory();
+    debug() << "commitTrack on"<<track->title()<< "album"<<srcAlbum->name() << "dir:" << track->directory()->path()<<track->directory();
 
     Q_ASSERT( track );
     Q_ASSERT( srcAlbum );

@@ -43,7 +43,7 @@ namespace Collections
         , m_controller( 0 )
         , m_collectionIsManaged( false )
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
     }
 
     PlaydarCollectionFactory::~PlaydarCollectionFactory()
@@ -56,7 +56,7 @@ namespace Collections
     void
     PlaydarCollectionFactory::init()
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
         m_controller = new Playdar::Controller;
         connect( m_controller, &Playdar::Controller::playdarReady,
                  this, &PlaydarCollectionFactory::playdarReady );
@@ -81,7 +81,7 @@ namespace Collections
     void
     PlaydarCollectionFactory::playdarReady()
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
         if( !m_collection )
         {
@@ -113,7 +113,7 @@ namespace Collections
     void
     PlaydarCollectionFactory::collectionRemoved()
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
         m_collectionIsManaged = false;
         QTimer::singleShot( 10000, this, &PlaydarCollectionFactory::checkStatus );
@@ -123,20 +123,20 @@ namespace Collections
         : m_collectionId( i18n( "Playdar Collection" ) )
         , m_memoryCollection( new MemoryCollection )
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
     }
 
     PlaydarCollection::~PlaydarCollection()
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
     }
 
     QueryMaker*
     PlaydarCollection::queryMaker()
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
         PlaydarQueryMaker *freshQueryMaker = new PlaydarQueryMaker( this );
         connect( freshQueryMaker, &PlaydarQueryMaker::playdarError,
@@ -147,7 +147,7 @@ namespace Collections
     Playlists::UserPlaylistProvider*
     PlaydarCollection::userPlaylistProvider()
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
         return nullptr;
     }
@@ -179,7 +179,7 @@ namespace Collections
     bool
     PlaydarCollection::isWritable() const
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
         return false;
     }
@@ -187,7 +187,7 @@ namespace Collections
     bool
     PlaydarCollection::isOrganizable() const
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
         return false;
     }
@@ -195,7 +195,7 @@ namespace Collections
     bool
     PlaydarCollection::possiblyContainsTrack( const QUrl &url ) const
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
         QUrlQuery query( url );
         if( url.scheme() == uidUrlProtocol() &&
@@ -210,7 +210,7 @@ namespace Collections
     Meta::TrackPtr
     PlaydarCollection::trackForUrl( const QUrl &url )
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
         m_memoryCollection->acquireReadLock();
 
@@ -255,7 +255,7 @@ namespace Collections
     void
     PlaydarCollection::addNewTrack( Meta::PlaydarTrackPtr track )
     {
-        DEBUG_BLOCK
+        //DEBUG_BLOCK
 
         m_memoryCollection->acquireReadLock();
 

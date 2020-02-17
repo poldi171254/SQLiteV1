@@ -18,6 +18,7 @@
 
 #include "core-impl/collections/db/MountPointManager.h"
 #include "core-impl/collections/db/sql/SqlCollection.h"
+#include <core/support/Debug.h>
 
 Collections::SqlCollectionFactory::SqlCollectionFactory()
 {
@@ -26,6 +27,8 @@ Collections::SqlCollectionFactory::SqlCollectionFactory()
 Collections::SqlCollection*
 Collections::SqlCollectionFactory::createSqlCollection( QSharedPointer<SqlStorage> storage ) const
 {
+    DEBUG_BLOCK
+
     SqlCollection *coll = new SqlCollection( storage );
     MountPointManager *mpm = new MountPointManager( coll, storage );
     coll->setMountPointManager( mpm );

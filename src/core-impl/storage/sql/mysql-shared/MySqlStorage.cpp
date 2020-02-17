@@ -101,7 +101,7 @@ MySqlStorage::~MySqlStorage()
 
 QStringList MySqlStorage::query( const QString& statement )
 {
-    //DEBUG_BLOCK
+    DEBUG_BLOCK
     debug() << "[ATTN!] MySql::query( " << statement << " )";
 
     initThreadInitializer();
@@ -155,7 +155,7 @@ QStringList MySqlStorage::query( const QString& statement )
 
 int MySqlStorage::insert( const QString& statement, const QString& /* table */ )
 {
-    //DEBUG_BLOCK
+    DEBUG_BLOCK
     debug() << "[ATTN!] MySql::insert( " << statement << " )";
 
     initThreadInitializer();

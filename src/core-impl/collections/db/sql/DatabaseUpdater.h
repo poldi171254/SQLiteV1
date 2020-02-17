@@ -115,6 +115,7 @@ private:
     /** creates all the necessary tables, indexes etc. for the database */
     void createTables() const;
 
+
     int adminValue( const QString &key ) const;
 
     Collections::SqlCollection *m_collection;

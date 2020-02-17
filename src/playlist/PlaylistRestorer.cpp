@@ -53,6 +53,7 @@ void
 Restorer::runJingle()
 {
     DEBUG_BLOCK
+
     if( AmarokConfig::playFirstRunJingle() )
     {
         QString jingle = QStandardPaths::locate( QStandardPaths::GenericDataLocation, QStringLiteral("amarok/data/first_run_jingle.ogg") );
@@ -60,6 +61,8 @@ Restorer::runJingle()
         The::playlistController()->insertTrack( 0, CollectionManager::instance()->trackForUrl( QUrl::fromLocalFile(jingle) ) );
         AmarokConfig::setPlayFirstRunJingle( false );
     }
+
+
     Q_EMIT restoreFinished();
 }
 

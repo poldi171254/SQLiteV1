@@ -193,31 +193,61 @@ SqlUserPlaylistProvider::createTables()
         debug() << "No SQL Storage available!";
         return;
     }
-    sqlStorage->query( QString( "CREATE TABLE playlist_groups ("
-            " id " + sqlStorage->idType() +
-            ", parent_id INTEGER"
-            ", name " + sqlStorage->textColumnType() +
-            ", description " + sqlStorage->textColumnType() + " ) ENGINE = MyISAM;" ) );
-    sqlStorage->query( QStringLiteral("CREATE INDEX parent_podchannel ON playlist_groups( parent_id );") );
+    // As we now have an alternative DB, we need to check what sqlStorage we are using
+    if (sqlStorage->DatabaseType != "SQLite"){
+        sqlStorage->query( QString( "CREATE TABLE playlist_groups ("
+                " id " + sqlStorage->idType() +
+                ", parent_id INTEGER"
+                ", name " + sqlStorage->textColumnType() +
+                ", description " + sqlStorage->textColumnType() + " ) ENGINE = MyISAM;" ) );
+        sqlStorage->query( QStringLiteral("CREATE INDEX parent_podchannel ON playlist_groups( parent_id );") );
 
 
-    sqlStorage->query( QString( "CREATE TABLE playlists ("
-            " id " + sqlStorage->idType() +
-            ", parent_id INTEGER"
-            ", name " + sqlStorage->textColumnType() +
-            ", urlid " + sqlStorage->exactTextColumnType() + " ) ENGINE = MyISAM;" ) );
-    sqlStorage->query( QStringLiteral("CREATE INDEX parent_playlist ON playlists( parent_id );") );
+        sqlStorage->query( QString( "CREATE TABLE playlists ("
+                " id " + sqlStorage->idType() +
+                ", parent_id INTEGER"
+                ", name " + sqlStorage->textColumnType() +
+                ", urlid " + sqlStorage->exactTextColumnType() + " ) ENGINE = MyISAM;" ) );
+        sqlStorage->query( QStringLiteral("CREATE INDEX parent_playlist ON playlists( parent_id );") );
 
-    sqlStorage->query( QString( "CREATE TABLE playlist_tracks ("
-            " id " + sqlStorage->idType() +
-            ", playlist_id INTEGER "
-            ", track_num INTEGER "
-            ", url " + sqlStorage->exactTextColumnType() +
-            ", title " + sqlStorage->textColumnType() +
-            ", album " + sqlStorage->textColumnType() +
-            ", artist " + sqlStorage->textColumnType() +
-            ", length INTEGER "
-            ", uniqueid " + sqlStorage->textColumnType(128) + ") ENGINE = MyISAM;" ) );
+        sqlStorage->query( QString( "CREATE TABLE playlist_tracks ("
+                " id " + sqlStorage->idType() +
+                ", playlist_id INTEGER "
+                ", track_num INTEGER "
+                ", url " + sqlStorage->exactTextColumnType() +
+                ", title " + sqlStorage->textColumnType() +
+                ", album " + sqlStorage->textColumnType() +
+                ", artist " + sqlStorage->textColumnType() +
+                ", length INTEGER "
+                ", uniqueid " + sqlStorage->textColumnType(128) + ") ENGINE = MyISAM;" ) );
+    }
+    else {        
+        sqlStorage->query( QString( "CREATE TABLE playlist_groups ("
+                " id " + sqlStorage->idType() +
+                ", parent_id INTEGER"
+                ", name " + sqlStorage->textColumnType() +
+                ", description " + sqlStorage->textColumnType()) + " )" );
+        sqlStorage->query( QStringLiteral("CREATE INDEX parent_podchannel ON playlist_groups( parent_id );") );
+
+
+        sqlStorage->query( QString( "CREATE TABLE playlists ("
+                " id " + sqlStorage->idType() +
+                ", parent_id INTEGER"
+                ", name " + sqlStorage->textColumnType() +
+                ", urlid " + sqlStorage->exactTextColumnType()) + " ) "  );
+        sqlStorage->query( QStringLiteral("CREATE INDEX parent_playlist ON playlists( parent_id );") );
+
+        sqlStorage->query( QString( "CREATE TABLE playlist_tracks ("
+                " id " + sqlStorage->idType() +
+                ", playlist_id INTEGER "
+                ", track_num INTEGER "
+                ", url " + sqlStorage->exactTextColumnType() +
+                ", title " + sqlStorage->textColumnType() +
+                ", album " + sqlStorage->textColumnType() +
+                ", artist " + sqlStorage->textColumnType() +
+                ", length INTEGER "
+                ", uniqueid " + sqlStorage->textColumnType(128)) + " ) " );
+    }
 
     sqlStorage->query( QStringLiteral("CREATE INDEX parent_playlist_tracks ON playlist_tracks( playlist_id );") );
     sqlStorage->query( QStringLiteral("CREATE INDEX playlist_tracks_uniqueid ON playlist_tracks( uniqueid );") );

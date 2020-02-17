@@ -18,6 +18,7 @@
 #include "MySqlEmbeddedStorage.h"
 
 #include <core/support/Amarok.h>
+#include <core/support/Debug.h>
 
 
 MySqleStorageFactory::MySqleStorageFactory()
@@ -39,17 +40,24 @@ MySqleStorageFactory::init()
 
     if( ! Amarok::config( "MySQL" ).readEntry( "UseServer", false ) )
     {
-        MySqlEmbeddedStorage* storage = new MySqlEmbeddedStorage();
-        bool initResult = storage->init();
+        if( Amarok::config("SQLite").readEntry("Use SQLite", false))
+        {
+            MySqlEmbeddedStorage* storage = new MySqlEmbeddedStorage();
+            bool initResult = storage->init();
 
-        // handle errors during creation
-        if( !storage->getLastErrors().isEmpty() )
-            Q_EMIT newError( storage->getLastErrors() );
-        storage->clearLastErrors();
+            // handle errors during creation
+            if( !storage->getLastErrors().isEmpty() )
+                Q_EMIT newError( storage->getLastErrors() );
+            storage->clearLastErrors();
 
-        if( initResult )
-            Q_EMIT newStorage( QSharedPointer<SqlStorage>( storage ) );
-        else
-            delete storage;
+            if( initResult )
+                Q_EMIT newStorage( QSharedPointer<SqlStorage>( storage ) );
+            else
+                delete storage;
+        }
+        else {
+            debug() << "Embedded MySql bypassed";
+        }
+
     }
 }

@@ -577,6 +577,18 @@
     </entry>
 </group>
 
+<group name="SQLite">
+    <entry key="Use SQLite" type="Bool">
+        <label>Whether Amarok uses SQLite as the DB</label>
+        <default>true</default>
+    </entry>
+    <entry key="SQLiteDatabase" type="String">
+        <label>The name of the database Amarok will use. The user should have sufficient access permissions.</label>
+        <default>amarokdb</default>
+    </entry>
+
+</group>
+
 <group name="ScriptManager">
     <entry key="Enable Scripts" type="Bool">
         <label>Whether to enable Amarok's scripting module.</label>

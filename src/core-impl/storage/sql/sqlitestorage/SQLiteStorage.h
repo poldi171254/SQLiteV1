@@ -19,6 +19,7 @@
 
 #include "../amarok_sqlstorage_export.h"
 #include "core/storage/SqlStorage.h"
+#include <SQLiteCpp/SQLiteCpp.h>
 
 /**
  * Implements SQLite storage
@@ -28,12 +29,15 @@
 class SQLiteStorage : public SqlStorage
 {
     public:
-        /** Creates a new SqlStorage.
-         *
-         *  Note: Currently it is not possible to open two storages to different locations
-         *  in one process.
-         *  The first caller wins.
-         */
+        //bool DBOpen = false;
+        SQLite::Database *sqliteDB;
+        SQLite::Statement *res;
+        SQLite::Transaction *transaction;
+        static const int DB_VERSION = 15;
+
+        QStringList db_lastErrors;
+
+
         SQLiteStorage();
         virtual ~SQLiteStorage();
 
@@ -70,6 +74,12 @@ class SQLiteStorage : public SqlStorage
 
         /** Clears the list of the last errors. */
         void clearLastErrors() override;
+
+        void ResultSet(SQLite::Column data, QStringList &values);
+        //TODO
+        // MySQL creates these tables in collections, but just for now I'm doing this here
+        void createSQLiteTables();
+
 };
 
 #endif // SQLITESTORAGE_H
