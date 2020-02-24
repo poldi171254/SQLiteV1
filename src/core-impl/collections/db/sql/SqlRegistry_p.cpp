@@ -57,6 +57,7 @@ AbstractTrackTableCommitter::commit( const QList<Meta::SqlTrackPtr> &tracks )
         }
     }
     else {
+        // TODO make this a system variable
         maxSize = 1073741824;
     }
 
@@ -108,7 +109,6 @@ AbstractTrackTableCommitter::commit( const QList<Meta::SqlTrackPtr> &tracks )
             QString newValues = '(' + values.join(",") + ')';
 
             // - if the insertQuery is long enough, commit it.
-            // debug() << " StartL" << insertQueryStart.length() << " QueryL" << insertQuery.length() << " ValueL " << newValues.length() << "maxSize = " << maxSize - 3;
 
             if( insertQueryStart.length() + insertQuery.length() + newValues.length() + 1 >= maxSize - 3 )
             {
@@ -144,9 +144,15 @@ AbstractTrackTableCommitter::commit( const QList<Meta::SqlTrackPtr> &tracks )
         // set the resulting ids
         if( firstId <= 0 )
             warning() << "Insert failed.";
+
+        // TODO: Inserting multiple rows in one insert differences between MySql and SQLite
+        // MySQL: mysql_inser_id() returns the first row inserted while
+        // SQLite: getLastInsertRowid returns the last row inserted
+        if (dbType == "SQLite"){
+            firstId = firstId - insertedTracks.count() +1;
+        }
         for( int i = 0; i < insertedTracks.count(); i++ )
-            setId( const_cast<Meta::SqlTrack*>(insertedTracks.at( i ).data()),
-                   firstId + i );
+            setId( const_cast<Meta::SqlTrack*>(insertedTracks.at( i ).data()), firstId + i );
 
         insertQuery.clear();
         insertedTracks.clear();

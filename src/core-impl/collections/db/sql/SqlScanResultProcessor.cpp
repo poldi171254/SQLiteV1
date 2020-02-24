@@ -145,7 +145,7 @@ SqlScanResultProcessor::commitDirectory( QSharedPointer<CollectionScanner::Direc
 void
 SqlScanResultProcessor::commitAlbum( CollectionScanner::Album *album )
 {
-    debug() << "commitAlbum on"<<album->name()<< "artist"<<album->artist();
+    debug() << "commitAlbum title "<<album->name()<< "artist"<<album->artist();
 
     // --- get or create the album
     Meta::SqlAlbumPtr metaAlbum;
@@ -182,7 +182,7 @@ void
 SqlScanResultProcessor::commitTrack( CollectionScanner::Track *track,
                                      CollectionScanner::Album *srcAlbum )
 {
-    debug() << "commitTrack on"<<track->title()<< "album"<<srcAlbum->name() << "dir:" << track->directory()->path()<<track->directory();
+    debug() << "commitTrack Title "<<track->title()<< " Album "<<srcAlbum->name() << "dir:" << track->directory()->path()<<track->directory();
 
     Q_ASSERT( track );
     Q_ASSERT( srcAlbum );

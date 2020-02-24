@@ -191,6 +191,7 @@ AbstractScanResultProcessor::scanSucceeded()
 
             if( !isCompilation )
                 album->setArtist( albumArtist );
+
             commitAlbum( album );
         }
 

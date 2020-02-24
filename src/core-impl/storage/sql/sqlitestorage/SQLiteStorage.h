@@ -19,12 +19,16 @@
 
 #include "../amarok_sqlstorage_export.h"
 #include "core/storage/SqlStorage.h"
+#include <QMutex>
+#include <QString>
 #include <SQLiteCpp/SQLiteCpp.h>
 
 /**
  * Implements SQLite storage
  */
 
+struct st_sqlite;
+typedef struct st_sqlite SQLITE;
 
 class SQLiteStorage : public SqlStorage
 {
@@ -34,8 +38,6 @@ class SQLiteStorage : public SqlStorage
         SQLite::Statement *res;
         SQLite::Transaction *transaction;
         static const int DB_VERSION = 15;
-
-        QStringList db_lastErrors;
 
 
         SQLiteStorage();
@@ -76,9 +78,35 @@ class SQLiteStorage : public SqlStorage
         void clearLastErrors() override;
 
         void ResultSet(SQLite::Column data, QStringList &values);
-        //TODO
-        // MySQL creates these tables in collections, but just for now I'm doing this here
+        //TODO MySQL creates these tables in collections, but just for now I'm doing this here
         void createSQLiteTables();
+
+    protected:
+        /** Adds an error message to the m_lastErrors.
+     *
+     *  Adds a message including the mysql error number and message
+     *  to the last error messages.
+     *  @param message Usually the query statement being executed.
+     */
+        void reportError( const QString &message );
+
+        void initThreadInitializer();
+
+        /** Sends the first sql commands to setup the connection.
+     *
+     *  Sets things like the used database and charset.
+     *  @returns false if something fatal was wrong.
+     */
+        bool sharedInit( const QString &databaseName );
+
+        SQLITE* m_db;
+
+        /** Mutex protecting the m_lastErrors list */
+        mutable QMutex m_mutex;
+
+        QString m_debugIdent;
+        QStringList m_lastErrors;
+
 
 };
 
