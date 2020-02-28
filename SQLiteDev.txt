@@ -1,0 +1,44 @@
+This document describes the steps to get the SQLite implementation up and running
+
+I used a wrapper library called SQLiteCpp for sqlite; it comes with its own version of sqlite, so there are no other requirementes
+
+My development environment has the following structure:
+
+~/kdedev
+~/kdedev/bin
+~/kdedev/build
+~/kdedev/etc
+~/kdedev/lib
+~/kdedev/share
+~/kdedev/src
+
+The generated amarok_prefix.sh looks like this
+====
+export PATH=/home/llist/kdedev/bin:$PATH
+
+export XDG_DATA_DIRS=/home/llist/kdedev/share:${XDG_DATA_DIRS:-/usr/local/share/:/usr/share/}
+export XDG_CONFIG_DIRS=/home/llist/kdedev/etc/xdg:${XDG_CONFIG_DIRS:-/etc/xdg}
+
+export QT_PLUGIN_PATH=/home/llist/kdedev/lib/x86_64-linux-gnu/plugins:$QT_PLUGIN_PATH
+export QML2_IMPORT_PATH=/home/llist/kdedev/lib/x86_64-linux-gnu/qml:$QML2_IMPORT_PATH
+
+===
+
+1. goto ~/kdedev/src
+2. clone https://github.com/SRombauts/SQLiteCpp.git
+3. goto ~/kdedev/build and create amarok and SQLiteCpp
+4. goto ~/kdedev/build/SQLiteCpp
+5. cmake -DCMAKE_BUILD_TYPE=Debug -j4 -DCMAKE_VERBOSE_MAKEFILE=TRUE -DSQLITECPP_BUILD_EXAMPLES=ON -DSQLITECPP_BUILD_TESTS=ON ~/kdedev/src
+/SQLiteCpp
+6. cmake --build .
+7. make install
+8. You should now have the SQLiteCpp library and includes
+9. Get my branch of amarok
+10. goto ~/kdedev/build/amarok
+11. cmake -DCMAKE_INSTALL_PREFIX=$HOME/kdedev -DCMAKE_BUILD_TYPE=Debug -j4 -DCMAKE_VERBOSE_MAKEFILE=TRUE ~/kdedev/src/amarok
+12. cmake --build .
+
+I used Qt Creator so I just pointed the ide at ~/kdedev/src/amarok/CMakeLists.txt
+Should all be good to test
+
+Leo

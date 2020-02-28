@@ -81,7 +81,7 @@ SQLiteStorage::init( const QString &storageLocation )
     if (QFileInfo::exists(sqlitedb) && QFileInfo(sqlitedb).isFile()){
         try {
             sqliteDB = new SQLite::Database(sqlitedb.toUtf8().data(), SQLite::OPEN_READWRITE);
-            createSQLiteTables();
+            debug() << "Existing SQLite DB opened";
         } catch (std::exception& e) {
             reportError("SQLite DB access problem" );
             debug() << "SQLite DB access problem"  << e.what();
@@ -101,7 +101,7 @@ SQLiteStorage::init( const QString &storageLocation )
         }
     }
 
-    // This is only for initial debugging
+    //TODO: This is only for initial debugging
     // Inspect a database via SQLite header information
     try
     {
